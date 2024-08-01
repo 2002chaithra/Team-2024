@@ -12,6 +12,7 @@ class StudentScore:
         It reads the CSV file and initializes the CSV reader with the data,
         as well as extracts the fieldnames from the first row of the CSV file.
         '''
+        logging.debug("Initializing the StudentScore class")
         self.file_name = file_name
         try:
             self.csv_file = open(file_name,'r+',newline='')
@@ -55,6 +56,7 @@ class StudentScore:
                 rollno = input("Roll no: ")
                 if any(row['Rollno'] == rollno for row in self.csv_reader):
                     print("Roll no already exists!")
+                    logging.warning("Roll no already exists!")
                     break
                 else:
                     student_name = input("Enter the Student Name: ")
