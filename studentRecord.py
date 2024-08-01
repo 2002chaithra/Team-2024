@@ -42,7 +42,24 @@ class StudentScore:
             print(f"No records found for rollno {rollno}")
             logging.warning(f"No records found for rollno {rollno}")
 
+    def mainMenu(self):
+        '''
+        Display the main menu and handle user input to perform various operations.
+        Consists a console menu with options Retrieve student score and exit.
+        '''
+        logging.debug("Entering into the mainMenu method")
+        while True:
+            option = input("Enter the choice\n1. Retrive Student Score\n2. Exit\n>>> ")
+            if option == '1':
+                rollno = input("Enter the Roll no.: ")
+                self.RetrieveStudentScore(rollno)
+            elif option == '2':
+                print("Thank you")
+                self.csv_file.close()
+                sys.exit()
+            else:
+                print("Invalid choice")
+
 f = StudentScore("student_data.csv")
-rollno = input("Enter the Roll no.: ")
-f.RetrieveStudentScore()
+f.mainMenu()
 
