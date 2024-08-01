@@ -42,18 +42,78 @@ class StudentScore:
             print(f"No records found for rollno {rollno}")
             logging.warning(f"No records found for rollno {rollno}")
 
+    def StoreStudentScore(self):
+        '''
+        It allows the user to enter new student data and stores it to the CSV file.
+        This method checks for existing roll numbers to avoid duplicates and validates input
+        before saving it. It consists a console menu with the options save and back.
+        '''
+        logging.debug("Entering into the StoreStudentScore method")
+        while True:
+            option = input("Select an option\n1. Save\n2. Back\n>>>")
+            if option == '1':
+                rollno = input("Roll no: ")
+                if any(row['Rollno'] == rollno for row in self.csv_reader):
+                    print("Roll no already exists!")
+                    break
+                else:
+                    student_name = input("Enter the Student Name: ")
+                    english = input("Enter English score: ")
+                    maths = input("Enter Maths score: ")
+                    science = input("Enter Science score")
+                    self.save(rollno, student_name, english, maths, science)
+            elif option == '2':
+                break
+            else:
+                logging.warning("Invalid option")
+                print("Invalid option")
+                input("Press Enter to continue...")
+
+    def save(self,rollno,student_name,english,maths,science):
+        '''
+        Save a new student's data to the CSV file.
+        :param rollno: The rollno of the student.
+        :param student_name: The name of the student.
+        :param english: The english score of the student.
+        :param maths: The maths score of the student.
+        :param science: The science score of the student.
+        This method appends the new data to the Csv file.
+        '''
+        logging.debug("Entering into the save method")
+        row = {'Rollno':rollno,
+               'name':student_name,
+               'english':english,
+                'maths':maths,
+               'science':science
+               }
+        ls = []
+        for key in row:
+            if row[key] == '':
+                ls.append(key)
+        if len(ls) == 0:
+            with open(self.file_name,'a+',newline='') as file:
+                writer = csv.DictWriter(file, fieldnames=row.keys())
+                writer.writerow(row)
+                print("Student data stored successfully.")
+                logging.info("Student data stored successfully.")
+        else:
+            print(f"Failed to store data, following parameters are missing : {",".join(ls)}")
+
     def mainMenu(self):
         '''
         Display the main menu and handle user input to perform various operations.
-        Consists a console menu with options Retrieve student score and exit.
+        Consists a console menu with options Retrieve student score, Store student score and exit.
         '''
         logging.debug("Entering into the mainMenu method")
         while True:
-            option = input("Enter the choice\n1. Retrive Student Score\n2. Exit\n>>> ")
+            option = input(
+                "Enter the choice\n1. Retrive Student Score\n2. Store Student Score\n3. Exit\n>>> ")
             if option == '1':
                 rollno = input("Enter the Roll no.: ")
                 self.RetrieveStudentScore(rollno)
             elif option == '2':
+                self.StoreStudentScore()
+            elif option == '3':
                 print("Thank you")
                 self.csv_file.close()
                 sys.exit()
