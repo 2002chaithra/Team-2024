@@ -99,21 +99,48 @@ class StudentScore:
         else:
             print(f"Failed to store data, following parameters are missing : {",".join(ls)}")
 
+    def average(self):
+        '''
+        Calculates the average store of the student and adds them to the CSV file under a new column Average.
+        This method calculates the average of English, Maths, and Science scores for each student
+        and adds an 'Average' column to the CSV file. If the 'Average' column already exists, a warning is logged.
+        '''
+        logging.debug("Entering into the average method")
+        if 'Average' not in self.fieldnames:
+            self.fieldnames.append('Average')
+        else:
+            logging.warning("Column already exists")
+        reader = csv.DictReader(self.csv_file)
+        self.csv_file.seek(0)
+        rows = list(reader)
+        self.csv_file.seek(0)
+        writer = csv.DictWriter(self.csv_file, fieldnames=self.fieldnames)
+        writer.writeheader()
+        for row in rows:
+            avg = (int(row['english']) + int(row['maths']) + int(row['science'])) / 3
+            row['Average'] = round(avg,2)
+            writer.writerow(row)
+        logging.info("Average column is created.")
+        print("Average of the three subject is calculated")
+
     def mainMenu(self):
         '''
         Display the main menu and handle user input to perform various operations.
-        Consists a console menu with options Retrieve student score, Store student score and exit.
+        Consists a console menu with options Retrieve student score, Store student score, Calculate average,
+        Sort records and exit.
         '''
         logging.debug("Entering into the mainMenu method")
         while True:
             option = input(
-                "Enter the choice\n1. Retrive Student Score\n2. Store Student Score\n3. Exit\n>>> ")
+                "Enter the choice\n1. Retrive Student Score\n2. Store Student Score\n3. Calculate average\n4. Exit\n>>> ")
             if option == '1':
                 rollno = input("Enter the Roll no.: ")
                 self.RetrieveStudentScore(rollno)
             elif option == '2':
                 self.StoreStudentScore()
             elif option == '3':
+                self.average()
+            elif option == '4':
                 print("Thank you")
                 self.csv_file.close()
                 sys.exit()
