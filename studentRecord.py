@@ -123,6 +123,35 @@ class StudentScore:
         logging.info("Average column is created.")
         print("Average of the three subject is calculated")
 
+    def displayAll(self,header,ascending = True):
+        '''
+        Display all student records sorted by a specified header.
+        :param header: The header by which to sort the records.
+        :param ascending: Takes boolean values True or False to sort the records in either ascending or descending
+                        order. Default value is True.
+        This method sorts and prints all student records based on the specified header. It also updates the
+        CSV file with the sorted data.
+        '''
+        logging.debug("Entering into the displayAll method")
+        self.csv_file.seek(0)
+        if header not in self.fieldnames:
+            print("Header not found")
+            logging.warning("Header not found")
+            return
+        reader = csv.DictReader(self.csv_file)
+        rows = list(reader)
+        for row in rows:
+            if row[header].isdigit():
+                rows.sort(key=lambda row: float(row[header]),reverse= not ascending)
+            else:
+                rows.sort(key=lambda row: row[header],reverse= not ascending)
+        for row in rows:
+            print(row)
+        self.csv_file.seek(0)
+        writer = csv.DictWriter(self.csv_file,fieldnames=self.fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+        logging.info("Records are sorted")
     def mainMenu(self):
         '''
         Display the main menu and handle user input to perform various operations.
@@ -132,7 +161,7 @@ class StudentScore:
         logging.debug("Entering into the mainMenu method")
         while True:
             option = input(
-                "Enter the choice\n1. Retrive Student Score\n2. Store Student Score\n3. Calculate average\n4. Exit\n>>> ")
+                "Enter the choice\n1. Retrive Student Score\n2. Store Student Score\n3. Calculate average\n4. Sort records\n5. Exit\n>>> ")
             if option == '1':
                 rollno = input("Enter the Roll no.: ")
                 self.RetrieveStudentScore(rollno)
@@ -141,6 +170,17 @@ class StudentScore:
             elif option == '3':
                 self.average()
             elif option == '4':
+                header = input("Enter the header: ")
+                ascending = input("Enter True or False: ").capitalize()
+                if ascending == 'True':
+                    ascending = True
+                    self.displayAll(header, ascending)
+                elif ascending == 'False':
+                    ascending = False
+                    self.displayAll(header, ascending)
+                else:
+                    self.displayAll(header)
+            elif option == '5':
                 print("Thank you")
                 self.csv_file.close()
                 sys.exit()
